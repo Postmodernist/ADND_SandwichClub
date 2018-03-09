@@ -3,7 +3,6 @@ package com.udacity.sandwichclub;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,20 +12,38 @@ import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
 
 import org.json.JSONException;
-import org.w3c.dom.Text;
 
 import java.util.List;
+
+import butterknife.BindColor;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
   public static final String EXTRA_POSITION = "extra_position";
   private static final int DEFAULT_POSITION = -1;
 
+  @BindView(R.id.tv_aka)
+  TextView akaTextView;
+  @BindView(R.id.tv_ingredients)
+  TextView ingredientsTextView;
+  @BindView(R.id.tv_origin)
+  TextView originTextView;
+  @BindView(R.id.tv_description)
+  TextView descriptionTextView;
+
+  @BindColor(R.color.colorTextPrimary)
+  int textPrimaryColor;
+  @BindColor(R.color.colorTextSecondary)
+  int textSecondaryColor;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_detail);
 
+    ButterKnife.bind(this);
     ImageView ingredientsIv = findViewById(R.id.iv_image);
 
     Intent intent = getIntent();
@@ -70,53 +87,41 @@ public class DetailActivity extends AppCompatActivity {
   }
 
   private void populateUI(Sandwich sandwich) {
-    // Get views
-    TextView akaLabelTextView = findViewById(R.id.tv_aka_label);
-    TextView akaTextView = findViewById(R.id.tv_aka);
-    TextView ingredientsLabelTextView = findViewById(R.id.tv_ingredients_label);
-    TextView ingredientsTextView = findViewById(R.id.tv_ingredients);
-    TextView originLabelTextView = findViewById(R.id.tv_origin_label);
-    TextView originTextView = findViewById(R.id.tv_origin);
-    TextView descriptionLabelTextView = findViewById(R.id.tv_description_label);
-    TextView descriptionTextView = findViewById(R.id.tv_description);
-
-    fillTextViewFromList(akaLabelTextView, akaTextView, sandwich.getAlsoKnownAs());
-    fillTextViewFromList(ingredientsLabelTextView, ingredientsTextView, sandwich.getIngredients());
-    fillTextViewFromString(originLabelTextView, originTextView, sandwich.getPlaceOfOrigin());
-    fillTextViewFromString(descriptionLabelTextView, descriptionTextView, sandwich.getDescription());
+    fillTextViewFromList(akaTextView, sandwich.getAlsoKnownAs());
+    fillTextViewFromList(ingredientsTextView, sandwich.getIngredients());
+    fillTextViewFromString(originTextView, sandwich.getPlaceOfOrigin());
+    fillTextViewFromString(descriptionTextView, sandwich.getDescription());
   }
 
   /**
    * Fill textView with items from list and show/hide both labelTextView and textView
    */
-  private void fillTextViewFromList(TextView labelTextView, TextView textView, List<String> list) {
+  private void fillTextViewFromList(TextView textView, List<String> list) {
     if (list.isEmpty()) {
-      labelTextView.setVisibility(View.GONE);
-      textView.setVisibility(View.GONE);
-    } else {
-      textView.setText("");
-      for (int i = 0; i < list.size(); i++) {
-        textView.append(list.get(i));
-        if (i != list.size() - 1) {
-          textView.append(", ");
-        }
+      textView.setTextColor(textSecondaryColor);
+      textView.setText(R.string.detail_empty);
+      return;
+    }
+    textView.setTextColor(textPrimaryColor);
+    textView.setText("");
+    for (int i = 0; i < list.size(); i++) {
+      textView.append(list.get(i));
+      if (i != list.size() - 1) {
+        textView.append(", ");
       }
-      labelTextView.setVisibility(View.VISIBLE);
-      textView.setVisibility(View.VISIBLE);
     }
   }
 
   /**
    * Fill textView with string and show/hide both labelTextView and textView
    */
-  private void fillTextViewFromString(TextView labelTextView, TextView textView, String string) {
+  private void fillTextViewFromString(TextView textView, String string) {
     if (string.isEmpty()) {
-      labelTextView.setVisibility(View.GONE);
-      textView.setVisibility(View.GONE);
-    } else {
-      textView.setText(string);
-      labelTextView.setVisibility(View.VISIBLE);
-      textView.setVisibility(View.VISIBLE);
+      textView.setTextColor(textSecondaryColor);
+      textView.setText(R.string.detail_empty);
+      return;
     }
+    textView.setTextColor(textPrimaryColor);
+    textView.setText(string);
   }
 }
